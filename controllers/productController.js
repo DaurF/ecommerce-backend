@@ -20,8 +20,6 @@ exports.getAllProducts = (req, res) => {
 }
 
 exports.getProduct = (req, res) => {
-  console.log(req.params)
-
   res.send('Your request has been handled! 😘')
 }
 
