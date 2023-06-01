@@ -1,9 +1,17 @@
 const Product = require('../models/productModel')
 
-// ROUTE HANDLERS
+exports.aliasTopProducts = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,description';
+
+  next();
+}
+
 exports.getAllProducts = async (req, res) => {
   try {
     // Строим запрос, исключяя определенные поля по типу page, sort...
+
     // 1A) Фильтр
     const queryObj = {...req.query};
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
@@ -31,7 +39,18 @@ exports.getAllProducts = async (req, res) => {
       query = query.select('-__v');
     }
 
-    // Выполняем запрос и получаем результат запросы
+    // 4) Пагинация
+    const page = +req.query.page || 1;
+    const limit = +req.query.limit || 100;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+    if (req.query.page) {
+      const numProducts = await Product.countDocuments();
+      if (skip >= numProducts) throw new Error('This page does not exist');
+    }
+
+    // Выполняем запрос и получаем  результат запросы
     const products = await query;
 
     // Отправляем ответ клиенту
