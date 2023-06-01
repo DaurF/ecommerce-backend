@@ -3,7 +3,38 @@ const Product = require('../models/productModel')
 // ROUTE HANDLERS
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    // Строим запрос, исключяя определенные поля по типу page, sort...
+    // 1A) Фильтр
+    const queryObj = {...req.query};
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(el => delete queryObj[el])
+
+    // 1B) Фильтр со сравнительными операторами
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+
+    let query = Product.find(JSON.parse(queryStr));
+
+    // 2) Сортировка
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt')
+    }
+
+    // 3) Ограничение полей
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+
+    // Выполняем запрос и получаем результат запросы
+    const products = await query;
+
+    // Отправляем ответ клиенту
     res.status(200).json({
       status: 'success',
       results: products.length,
@@ -48,7 +79,7 @@ exports.createProduct = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: 'Invalid data sent'
+      message: err
     })
   }
 }
