@@ -1,5 +1,6 @@
 const express = require("express");
 const productController = require('../controllers/productController')
+const authController = require('../controllers/authController')
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.route('/product-stats').get(productController.getProductStats)
 
 router
   .route('/')
-  .get(productController.getAllProducts)
+  .get(authController.protect, productController.getAllProducts)
   .post(productController.createProduct)
 
 router
