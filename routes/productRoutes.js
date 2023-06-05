@@ -12,13 +12,17 @@ router.route('/product-stats').get(productController.getProductStats)
 
 router
   .route('/')
-  .get(authController.protect, productController.getAllProducts)
+  .get(productController.getAllProducts)
   .post(productController.createProduct)
 
 router
   .route('/:id')
   .get(productController.getProduct)
   .patch(productController.updateProduct)
-  .delete(productController.deleteProduct);
+  .delete(
+    authController.protect,
+    authController.restrictTo('moderator', 'admin'),
+    productController.deleteProduct
+  );
 
 module.exports = router;
