@@ -1,19 +1,19 @@
-const express = require("express");
-const productController = require('../controllers/productController')
-const authController = require('../controllers/authController')
+const express = require('express');
+const productController = require('../controllers/productController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
 router
   .route('/top-5-cheap')
-  .get(productController.aliasTopProducts, productController.getAllProducts)
+  .get(productController.aliasTopProducts, productController.getAllProducts);
 
-router.route('/product-stats').get(productController.getProductStats)
+router.route('/product-stats').get(productController.getProductStats);
 
 router
   .route('/')
-  .get(productController.getAllProducts)
-  .post(productController.createProduct)
+  .get(authController.protect, productController.getAllProducts)
+  .post(productController.createProduct);
 
 router
   .route('/:id')
