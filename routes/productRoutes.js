@@ -1,8 +1,12 @@
 const express = require('express');
 const productController = require('../controllers/productController');
 const authController = require('../controllers/authController');
+const reviewController = require('../controllers/reviewController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
+
+router.use('/:productId/reviews', reviewRouter);
 
 router
   .route('/top-5-cheap')
@@ -23,6 +27,14 @@ router
     authController.protect,
     authController.restrictTo('moderator', 'admin'),
     productController.deleteProduct
+  );
+
+router
+  .route('/:productId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo('user'),
+    reviewController.createReview
   );
 
 module.exports = router;
