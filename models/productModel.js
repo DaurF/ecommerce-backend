@@ -3,6 +3,10 @@ const slugify = require('slugify');
 
 const productSchema = new mongoose.Schema(
   {
+    category: {
+      type: String,
+      required: [true, 'A product must have a category'],
+    },
     manufacturer: {
       type: String,
       required: [true, 'A product must have a manufacturer'],
@@ -14,70 +18,11 @@ const productSchema = new mongoose.Schema(
     },
     model: {
       type: String,
-      required: [true, 'A product must have a manufacturer'],
+      required: [true, 'A product must have a model'],
       trim: true,
       maxlength: [
         40,
         'A product model must have less or equal than 40 characters',
-      ],
-    },
-    // SMARTPHONE
-    operatingSystem: {
-      type: String,
-      required: true,
-    },
-    cpu: {
-      type: String,
-      required: true,
-    },
-    ram: Number,
-    storage: Number,
-    displaySize: Number,
-    displayRes: String,
-    panel: {
-      type: String,
-      enum: ['ips', 'va', 'tn'],
-    },
-    rearCamera: {
-      type: String,
-      required: true,
-    },
-    frontCamera: {
-      type: String,
-      required: true,
-    },
-    batteryCapacity: {
-      type: Number,
-      required: true,
-    },
-    connectivity: {
-      type: Array,
-      default: [],
-    },
-    weight: {
-      type: Number,
-      required: true,
-    },
-    height: {
-      type: Number,
-      required: true,
-    },
-    width: {
-      type: Number,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: [true, 'A product must have a title'],
-      unique: true,
-      trim: true,
-      maxlength: [
-        40,
-        'A product title must have less or equal than 40 characters',
-      ],
-      minlength: [
-        10,
-        'A product title must have more or equal than 10 characters',
       ],
     },
     description: {
@@ -108,7 +53,6 @@ const productSchema = new mongoose.Schema(
         message: 'Discount price ({VALUE}) should be below regular price',
       },
     },
-
     imageCover: {
       type: String,
       required: [true, 'A product must have a cover image'],
@@ -134,11 +78,6 @@ productSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'product',
   localField: '_id',
-});
-
-productSchema.pre('save', function (next) {
-  this.slug = slugify(this.name, { lower: true });
-  next();
 });
 
 productSchema.pre(/^find/, function (next) {
