@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify');
 
 const productSchema = new mongoose.Schema(
   {
@@ -73,6 +72,9 @@ const productSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+productSchema.index({ price: 1 });
+productSchema.index({ category: 1 });
 
 productSchema.virtual('reviews', {
   ref: 'Review',
