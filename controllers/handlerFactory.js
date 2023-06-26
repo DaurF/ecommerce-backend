@@ -1,6 +1,5 @@
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const Product = require('../models/productModel');
 const APIFeatures = require('../utils/apiFeatures');
 
 exports.deleteOne = Model =>

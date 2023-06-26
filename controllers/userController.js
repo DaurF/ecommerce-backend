@@ -56,7 +56,47 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.addToCart = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    { $push: { cartItems: req.body } },
+    { new: true, runValidators: true }
+  );
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
+exports.removeFromCart = catchAsync(async (req, res, next) => {
+  console.log(req.body._id);
+
+  await User.findByIdAndUpdate(req.user._id, {
+    $pull: { cartItems: req.body._id },
+  });
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
+exports.getCart = catchAsync(async (req, res, next) => {
+  const { cartItems } = await User.findById(req.user._id).populate({
+    path: 'cartItems',
+    fields: 'cartItems',
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: cartItems,
+    },
+  });
+});
+
 exports.getAllUsers = factory.getAll(User);
-exports.getUser = factory.getOne(User);
+exports.getUser = factory.getOne(User, { path: 'products' });
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
