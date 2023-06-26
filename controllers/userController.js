@@ -70,8 +70,6 @@ exports.addToCart = catchAsync(async (req, res, next) => {
 });
 
 exports.removeFromCart = catchAsync(async (req, res, next) => {
-  console.log(req.body._id);
-
   await User.findByIdAndUpdate(req.user._id, {
     $pull: { cartItems: req.body._id },
   });
